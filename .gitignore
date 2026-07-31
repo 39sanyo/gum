@@ -8,8 +8,8 @@ node_modules/
 
 # Puppeteer debug artifacts
 debug-screenshot.png
-src/screenshot/*.png
-src/screenshot/screenshot.png
+src/core/screenshot/*.png
+src/core/screenshot/screenshot.png
 
 # Logs
 *.log
