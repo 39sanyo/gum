@@ -2,8 +2,8 @@ require('dotenv').config();
 const path = require('path');
 const { Client, IntentsBitField, EmbedBuilder, AttachmentBuilder, MessageFlags} = require('discord.js');
 
-const { dollSearch } = require('./dollSearch.js');
-const { simpleError } = require('./simpleError.js');
+const { dollSearch } = require('../dollSearch.js');
+const { simpleError } = require('../simpleError.js');
 
 const client = new Client({
     intents: [

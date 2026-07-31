@@ -60,7 +60,7 @@ const scraper = async (url, elementSelector, priceElementSelector) => {
         return { title, price, url, found: !!priceEl };
     }, elementSelector, priceElementSelector);
 
-    await page.screenshot({ path: 'src/screenshot/screenshot.png' });
+    await page.screenshot({ path: 'src/core/screenshot/screenshot.png' });
 
     await browser.close();
     return result;
