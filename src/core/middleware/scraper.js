@@ -57,13 +57,13 @@ const scraper = async (url, elementSelector, priceElementSelector) => {
 
         const title = document.title || null;
 
-        return { title, price, url, found: !!priceEl };
+
+        return { title, price, url, found: !!priceEl};
     }, elementSelector, priceElementSelector);
 
-    await page.screenshot({ path: 'src/core/screenshot/screenshot.png' });
-
+    const ssBuffer = await page.screenshot();
     await browser.close();
-    return result;
+    return { result, screenshot: ssBuffer };
 };
 
 const finder = async () => {

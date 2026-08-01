@@ -17,11 +17,10 @@ module.exports = {
         await interaction.deferReply();
         const role = process.env.ROLE_ID;
         const rawInput = interaction.options.getString('url');
-        const ssPath = path.join(__dirname, '..', 'screenshot', 'screenshot.png');
 
         try {
             const result = await dollSearch(rawInput);
-            const ss = new AttachmentBuilder(ssPath, { name: 'screenshot.png' });
+            const ss = new AttachmentBuilder(result.screenshot, { name: 'screenshot.png' });
             const embed = new EmbedBuilder()
                 .setTitle("Doll Price: ")
                 .setImage('attachment://screenshot.png')
