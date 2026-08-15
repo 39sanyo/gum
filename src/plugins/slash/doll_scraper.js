@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
-const { dollSearch } = require('../helpers/dollsearch.js');
+const { dollSearch } = require('../helpers/dollScraper/dollsearch.js');
 const { simpleError } = require('../helpers/simpleError.js');
 const path = require('path');
 
