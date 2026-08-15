@@ -1,6 +1,6 @@
 const client = require('./client');
 // const { closeDatabase } = require('../data');
-const { stopApiServer } = require('../api/server');
+// const { stopApiServer } = require('../api/server');
 
 let isShuttingDown = false;
 
@@ -10,19 +10,19 @@ async function shutdown() {
 
     console.log('Shutting down gracefully...');
 
-   try {
-       await stopApiServer();
-       console.log('API server stopped');
-   } catch (error) {
-       console.error('Error during API server shutdown:', error);
-   }
+    try {
+        await stopApiServer();
+        console.log('API server stopped');
+    } catch (error) {
+        console.error('Error during API server shutdown:', error);
+    }
 
-//  try {
-//      await closeDatabase();
-//      console.log('Database connections closed');
-//  } catch (error) {
-//      console.error('Error during database shutdown:', error);
-//  }
+    try {
+        await closeDatabase();
+        console.log('Database connections closed');
+    } catch (error) {
+        console.error('Error during database shutdown:', error);
+    }
 
     try {
         if (client.isReady()) {

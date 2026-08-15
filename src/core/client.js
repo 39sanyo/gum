@@ -1,70 +1,49 @@
-const { Client, IntentsBitField, Collection, REST} = require('discord.js');
+const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
 const config = require('./config');
-const path = require('path');
-const fs = require('fs');
-
-const { simpleError } = require('./middleware/simpleError.js');
+const { INTENTS } = require('./constants');
+const { initializeDatabase } = require('../data');
+const { registerEventHandlers } = require('../handlers/command');
+const { getSlashCommandData } = require('../handlers/slash');
+const { startApiServer } = require('../api/server');
 
 const client = new Client({
     intents: [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMembers,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.MessageContent,
-    ],
-}) 
-
-client.commands = new Collection();
-
-client.on('clientReady', async () => {
-    try {
-        console.log(`Logged in as ${client.user.tag}!`);
-    } catch (error) {
-        console.error(`Bot Initialization Failed: `, error)
-        process.exit(1);
-    }
-}); 
-
-client.on('error', (err) => {
-     console.error(`Discord client Error:`, err);
+        GatewayIntentBits[INTENTS.GUILDS],
+        GatewayIntentBits[INTENTS.GUILD_MESSAGES],
+        GatewayIntentBits[INTENTS.MESSAGE_CONTENT],
+        GatewayIntentBits[INTENTS.DIRECT_MESSAGES]
+    ]
 });
 
-const commandsPath = path.join(__dirname, 'commands');
-const commandsFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js')); 
-
-for (const file of commandsFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-
-    if ('data' in command && 'execute' in command) {
-        client.commands.set(command.data.name, command);
-    } else {
-        console.log(`WARNING The command at ${filePath} is missing a required "data" or "execute" property`);
-    }
-}
-
-client.on('interactionCreate', async (interaction) => {
-    if(!interaction.isChatInputCommand()) return;
-
-    const command = interaction.client.commands.get(interaction.commandName);
-
-    if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        return;
-    }
-
+client.once('clientReady', async () => {
     try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        const errorPayload = { content: 'There was an error while executing this command', ephemeral: true };
-        if (interaction.deffered || interaction.replied) {
-            await interaction.editReply(errorPayload);
-        } else {
-            await interaction.reply(errorPayload);
-        }
-    }
+        await initializeDatabase();
+        registerEventHandlers(client);
 
+        const rest = new REST({ version: '10' }).setToken(config.discord.token);
+
+        await rest.put(
+            Routes.applicationGuildCommands(config.discord.clientId, config.discord.guildId),
+            { body: getSlashCommandData() }
+        );
+
+        if (config.api.enabled) {
+            await startApiServer();
+        }
+
+        console.log(`Logged in as ${client.user.tag} - All systems ready`);
+    } catch (error) {
+        console.error('Bot initialization failed:', error);
+        process.exit(1);
+    }
+});
+
+client.on('error', (error) => {
+    console.error('Discord client error:', error);
+});
+
+client.on('warn', (warning) => {
+    console.warn('Discord client warning:', warning);
 });
 
 module.exports = client;

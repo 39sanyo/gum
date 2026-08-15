@@ -1,4 +1,3 @@
-// Bootstrap entry point
 const config = require('./core/config');
 const client = require('./core/client');
 const shutdown = require('./core/shutdown');
