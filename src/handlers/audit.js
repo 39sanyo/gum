@@ -1,4 +1,3 @@
-const { select, insertAuditLog } = require('../data');
 const { DATABASE_TABLES, LOG_LEVELS, AUDIT_ACTIONS } = require('../core/constants');
 const logger = require('../utils/logger');
 

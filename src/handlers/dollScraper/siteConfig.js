@@ -23,6 +23,13 @@ const siteConfigs = {
         elementSelector: '.inline-flex.flex-wrap.items-center.leading-tight',
         priceElementSelector: '.text-2xl'
     },
+
+    
+// Local site for testing purposes.
+    'localhost:4000': {
+        elementSelector: '.doll-detail',
+        priceElementSelector: '.doll-price',
+    },
 };
 
 module.exports = { siteConfigs };

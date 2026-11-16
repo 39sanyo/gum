@@ -1,5 +1,5 @@
 -- Database table schemas
--- servers table: guild configuration storage
+-- servers able: guild configuration storage
 CREATE TABLE IF NOT EXISTS servers (
     guild_id TEXT PRIMARY KEY,
     config TEXT NOT NULL DEFAULT '{}',
@@ -35,6 +35,23 @@ CREATE TABLE IF NOT EXISTS rate_limits (
     count INTEGER NOT NULL DEFAULT 0,
     reset_time INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS doll_master (
+    doll_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    listing_url TEXT UNIQUE NOT NULL,
+    current_price DECIMAL(10, 2) NOT NULL,
+    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS price_history_master (
+    history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    doll_id INTEGER NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (doll_id) REFERENCES doll_master(doll_id)
+);
+
 
 -- Performance indexes
 CREATE INDEX IF NOT EXISTS idx_servers_guild_id ON servers(guild_id);

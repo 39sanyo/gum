@@ -61,7 +61,7 @@ router.put('/servers/:guildId/config', validateGuildId, handleAsync(async (req, 
         return res.status(400).json({ error: 'Invalid config data' });
     }
 
-    const { inster } = require('../data');
+    const { } = require('../data');
     await insert(DATABASE_TABLES.SERVERS, {
         guild_id: guildId,
         config: JSON.stringify(newConfig),
