@@ -23,6 +23,8 @@ const insertHistoryStmt = db.prepare(`
   VALUES (@doll_id, @price)
 `);
 
+const getAllDollsStmt = db.prepare('SELECT doll_id, name, listing_url FROM doll_master');
+
 // 2. Transaction to handle new listings, price changes, and unchanged prices
 const insertDollMaster = db.transaction((listing) => {
   const existingDoll = findDollStmt.get(listing.listing_url);
@@ -43,10 +45,17 @@ const insertDollMaster = db.transaction((listing) => {
     const oldPrice = existingDoll.current_price;
     updateDollStmt.run({ doll_id: existingDoll.doll_id, price: listing.price });
     insertHistoryStmt.run({ doll_id: existingDoll.doll_id, price: listing.price });
+
     console.log(`[UPDATED] "${listing.name}": $${oldPrice} -> $${listing.price}`);
     return {
       status: 'UPDATED',
-      label: `Price changed: $${oldPrice} → $${listing.price}`
+      label: `Price changed: $${oldPrice} → $${listing.price}`,
+      doll: {
+        name: listing.name,
+        url: listing.listing_url,
+        oldPrice,
+        newPrice: listing.price,
+      },
     };
   }
 
@@ -57,4 +66,6 @@ const insertDollMaster = db.transaction((listing) => {
   };
 });
 
-module.exports = { insertDollMaster };
+const getAllDolls = () => getAllDollsStmt.all();
+
+module.exports = { insertDollMaster, getAllDolls };

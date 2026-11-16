@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
-const { dollSearch } = require('../../handlers/dollScraper/dollSearch');
 const { simpleError } = require('../../handlers/simpleError.js');
-const { insertDollMaster } = require('../../handlers/dollMaster.js');
+const { checkDoll } = require('../../handlers/checkDoll.js');
 
 module.exports = {
   type: 'slash',
@@ -21,23 +20,8 @@ module.exports = {
     const rawInput = interaction.options.getString('url');
 
     try {
-      const result = await dollSearch(rawInput);
-
-      // 1. Clean the scraped price into a number (e.g. "$14,246 TWD" -> 14246)
-      const numericPrice = result.price 
-        ? parseFloat(String(result.price).replace(/[^0-9.]/g, '')) 
-        : null;
-
-      // 2. Save to SQLite using insertDollMaster and result.title
-      let dbStatus = 'Price not found (not saved)';
-      if (numericPrice !== null && !isNaN(numericPrice)) {
-        const dbResult = insertDollMaster({
-          name: result.title || 'Unknown Doll',
-          listing_url: rawInput,
-          price: numericPrice
-        });
-        dbStatus = dbResult.label;
-      }
+      const { scrape: result, db } = await checkDoll(rawInput);
+      const dbStatus = db ? db.label : 'Price not found (not saved)';
 
       const ss = new AttachmentBuilder(result.screenshot, { name: 'screenshot.png' });
       const embed = new EmbedBuilder()
