@@ -7,8 +7,8 @@ function parsePrice(raw) {
   return Number.isNaN(n) ? null : n;
 }
 
-async function checkDoll(url, fallbackName) {
-  const scrape = await dollSearch(url);
+async function checkDoll(url, fallbackName, options) {
+  const scrape = await dollSearch(url, options);
   const price = parsePrice(scrape.price);
 
   let db = null;

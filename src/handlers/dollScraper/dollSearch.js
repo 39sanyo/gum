@@ -1,7 +1,7 @@
 const { scraper } = require ('./scraper.js')
 const { siteConfigs } =  require('./siteConfig.js');
 
-const dollSearch = async (rawInput) => {
+const dollSearch = async (rawInput, options) => {
     const matchedDomain = Object.keys(siteConfigs).find((domain) => rawInput.includes(domain));
 
     if (!matchedDomain) {
@@ -9,8 +9,8 @@ const dollSearch = async (rawInput) => {
     }
 
     const { elementSelector, priceElementSelector } = siteConfigs[matchedDomain];
-    const finder = await scraper(rawInput, elementSelector, priceElementSelector);
-    console.log(finder);
+    const finder = await scraper(rawInput, elementSelector, priceElementSelector, options);
+    //console.log(finder);
     return finder;
 }
 

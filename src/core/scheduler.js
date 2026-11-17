@@ -6,6 +6,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let running = false;
 
 async function checkAllDolls(client) {
+
   if (running) return;
   running = true;
   console.log('[scheduler] Checking all dolls...');
@@ -13,7 +14,7 @@ async function checkAllDolls(client) {
   try {
     for (const doll of getAllDolls()) {
       try {
-        const { scrape, db } = await checkDoll(doll.listing_url, doll.name);
+        const { scrape, db } = await checkDoll(doll.listing_url, doll.name, { screenshot: true });
         await notifyPriceChange(client, db, scrape.screenshot);
       } catch (err) {
         console.error(`[scheduler] Failed on ${doll.listing_url}:`, err.message);

@@ -4,9 +4,9 @@ const { checkDoll } = require('../../handlers/checkDoll.js');
 
 module.exports = {
   type: 'slash',
-  name: 'doll_scraper',
+  name: 'register_doll',
   data: new SlashCommandBuilder()
-    .setName('doll_scraper')
+    .setName('register_doll')
     .setDescription('Scrapes a site for doll info')
     .addStringOption(option =>
       option.setName('url')
@@ -25,12 +25,12 @@ module.exports = {
 
       const ss = new AttachmentBuilder(result.screenshot, { name: 'screenshot.png' });
       const embed = new EmbedBuilder()
-        .setTitle(result.title ? `Doll Price: ${result.title}` : 'Doll Price:')
+        .setTitle(result.title ? `Doll Successfully Registered: ${result.title}` : 'Doll Price:')
         .setImage('attachment://screenshot.png')
         .addFields(
-          { name: '**UPDATE:**', value: `${dbStatus} for ${rawInput}` },
+          { name: '**URL:**', value: `${rawInput}` },
           {
-            name: '**Price**',
+            name: '**Initial Price**',
             value: result.price
               ? `${result.price} ${result.currency ?? ''}`.trim()
               : 'Price not found'
@@ -38,7 +38,6 @@ module.exports = {
         );
 
       await interaction.editReply({ embeds: [embed], files: [ss] });
-      await interaction.followUp({ content: `<@&${role}>`, allowedMentions: { roles: [role] } });
 
     } catch (err) {
       console.log(err);

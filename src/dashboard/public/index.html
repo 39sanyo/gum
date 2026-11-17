@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APDB</title>
+<style>
+  /* Themes: shop (default), pink, dark */
+  :root {
+    --bg:repeating-linear-gradient(0deg,#fcd6ac 0 2px,#fddab3 2px 4px);
+    --wrap:#fff; --text:#222; --top:#8c9a3a; --accent:#5c9140; --link:#4b7d22; --tan:#b9b06f;
+    --beige:#f6f1d8; --brown:#8a6a22; --red:#d11a1a; --muted:#8a8a6a; --row-line:#c9c9a0;
+    --cart-bg:#fffef3; --spark-bg:#faf8ea; --spark-line:#ddd; --down:#1b7f3b; --up:#d11a1a;
+    --dotted:#999; --sub:#555; --input-bg:#fff; --input-border:#bbb; --btn-text:#fff;
+    --shadow:0 0 8px rgba(0,0,0,.15); --fill:rgba(140,154,58,.15); --tip-bg:#4d5a1c;
+    color-scheme:light;
+  }
+  :root[data-theme="pink"] {
+    --bg:radial-gradient(circle at 20px 20px,rgba(255,255,255,.85) 0 7px,transparent 8px) 0 0/60px 60px,#ffd9e8;
+    --wrap:#fffdfe; --text:#4a2535; --top:#ff8fb8; --accent:#ec6a96; --link:#d6336c; --tan:#f6bfd3;
+    --beige:#ffe6f0; --brown:#c2185b; --red:#ff4f6d; --muted:#b07a92; --row-line:#f9d0e0;
+    --cart-bg:#fff5f9; --spark-bg:#fff2f7; --spark-line:#f6c9da; --down:#2a9d8f; --up:#e8456b;
+    --dotted:#e6a8c0; --sub:#8a5a72; --input-bg:#fff; --input-border:#f6bfd3; --btn-text:#fff;
+    --shadow:0 6px 24px rgba(236,106,150,.25); --fill:rgba(236,106,150,.15); --tip-bg:#c2185b;
+  }
+  :root[data-theme="dark"] {
+    --bg:#120f15; --wrap:#1e1a22; --text:#eee8f0; --top:#ff7eb0; --accent:#ff7eb0; --link:#ff9cc3; --tan:#4a3a52;
+    --beige:#2a2230; --brown:#ffb3d1; --red:#ff5c7a; --muted:#a894b0; --row-line:#3a2f42;
+    --cart-bg:#241e2a; --spark-bg:#241e2a; --spark-line:#3a2f42; --down:#5fe0b0; --up:#ff6b88;
+    --dotted:#5a4a64; --sub:#b8a4c0; --input-bg:#2a2230; --input-border:#4a3a52; --btn-text:#2a0f1c;
+    --shadow:0 0 18px rgba(0,0,0,.6); --fill:rgba(255,126,176,.15); --tip-bg:#000;
+    color-scheme:dark;
+  }
+
+  * { box-sizing:border-box; }
+  body { margin:0; padding:0 0 40px; font:14px/1.5 'Hiragino Kaku Gothic ProN','Hiragino Sans',Meiryo,system-ui,sans-serif; color:var(--text);
+    background:var(--bg); background-attachment:fixed; }
+  a { color:var(--link); }
+  select { background:var(--input-bg); color:var(--text); border:1px solid var(--input-border); }
+  #wrap { max-width:980px; margin:28px auto 0; background:var(--wrap); border-top:4px solid var(--top); box-shadow:var(--shadow); padding:20px; }
+
+  .top { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .search { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .search input { width:190px; padding:6px; border:1px solid var(--input-border); background:var(--input-bg); color:var(--text); font:inherit; }
+  .btn { background:var(--accent); color:var(--btn-text); border:0; padding:8px 14px; border-radius:3px; font:inherit; font-weight:700; cursor:pointer; }
+  .btn:hover { filter:brightness(1.08); }
+  .themes { display:flex; gap:6px; align-items:center; font-size:.8rem; color:var(--sub); }
+  .themes button { font:inherit; font-size:.8rem; padding:4px 12px; border:1px solid var(--tan); background:var(--cart-bg); color:var(--text); border-radius:999px; cursor:pointer; }
+  .themes button.on { background:var(--accent); border-color:var(--accent); color:var(--btn-text); font-weight:700; }
+  .title { margin:34px 0 26px 20px; font-size:1.25rem; }
+
+  #layout { display:grid; grid-template-columns:210px 1fr; gap:22px; }
+  .sb h3 { margin:0; padding:14px 10px 10px; border-top:4px dotted var(--tan); border-bottom:1px solid var(--top); font-size:1rem; }
+  .sb ul { list-style:none; margin:0 0 26px; padding:0; }
+  .sb li { position:relative; padding:6px 8px 6px 20px; border-bottom:1px solid var(--row-line); font-size:.85rem; }
+  .sb li::before { content:'▸'; position:absolute; left:6px; color:var(--top); }
+  .sb li.on a { font-weight:700; text-decoration:none; color:var(--text); }
+  .cartbox { border:1px solid var(--tan); background:var(--cart-bg); padding:10px; margin:10px 0 26px; font-size:.82rem; }
+
+  .box { border:1px solid var(--tan); margin-bottom:26px; }
+  .box h2, .plist h2 { margin:0; padding:11px 12px; background:var(--beige); color:var(--brown); font-size:1rem; font-weight:400; }
+  .box .in { padding:12px; font-size:.82rem; line-height:1.8; }
+  .plist h2 { border-bottom:3px solid var(--top); }
+  .ctrl { display:flex; flex-wrap:wrap; gap:18px; align-items:center; padding:26px 12px 22px; font-size:.8rem; border-bottom:1px dotted var(--dotted); }
+  .ctrl a { margin-right:10px; }
+  .pg { text-align:center; padding:14px 0 8px; border-bottom:1px dotted var(--dotted); }
+  .pg a, .pg b { display:inline-block; min-width:28px; padding:3px 9px; margin:0 3px; border:1px solid var(--tan); background:var(--beige); text-decoration:none; }
+  .pg b { background:var(--accent); color:var(--btn-text); border-color:var(--accent); }
+  .pg .cnt { font-size:.8rem; margin-top:6px; }
+
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:34px 20px; padding:24px 10px; justify-items:center; }
+  .tile { width:250px; }
+  .tname { display:block; min-height:2.8em; font-size:.82rem; text-align:center; }
+  canvas.spark { display:block; width:250px; height:140px; background:var(--spark-bg); border:1px solid var(--spark-line); margin:8px 0 6px; cursor:pointer; }
+  .row { text-align:right; min-height:16px; }
+  .new { background:var(--red); color:#fff; font:700 .65rem/1 sans-serif; padding:2px 5px; border-radius:3px; }
+  .desc { font-size:.8rem; margin:4px 0; }
+  .tprice { text-align:right; font-weight:700; margin-top:6px; }
+  .tstat { text-align:right; font-size:.76rem; margin-top:6px; color:var(--sub); }
+  .down { color:var(--down); } .up { color:var(--up); }
+
+  .crumb { font-size:.8rem; margin-bottom:12px; }
+  .dbody { padding:16px; }
+  .chart-box { position:relative; height:320px; }
+  table.spec { width:100%; border-collapse:collapse; margin-top:16px; font-size:.85rem; }
+  .spec th { width:34%; background:var(--beige); text-align:left; font-weight:400; color:var(--brown); padding:8px 10px; border:1px solid var(--tan); }
+  .spec td { padding:8px 10px; border:1px solid var(--tan); word-break:break-all; }
+  .spec.hist th { width:auto; }
+  .bigprice { font-size:1.6rem; font-weight:700; }
+  h3.hh { margin:22px 0 0; font-size:.95rem; color:var(--brown); }
+  .empty { text-align:center; color:var(--muted); padding:30px; }
+
+  @media (max-width:760px) { #layout { grid-template-columns:1fr; } .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="top">
+    <div class="themes" id="themes">
+      <span>Theme:</span>
+      <button data-theme="shop">Shop</button>
+      <button data-theme="pink">Pink</button>
+      <button data-theme="dark">Dark</button>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Search dolls" aria-label="Search dolls">
+      <button class="btn" id="go">Search</button>
+      <button class="btn" id="reload">Refresh now</button>
+    </div>
+  </div>
+  <div class="title"><a href="#" data-a="home">APDB</a></div>
+  <div id="layout">
+    <aside class="sb" id="side"></aside>
+    <section id="main">Loading…</section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const REFRESH_MS = 10000;
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => '$' + Number(n).toFixed(2);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const safeUrl = (u) => (/^https?:\/\//i.test(u) ? u : '#');
+// SQLite CURRENT_TIMESTAMP is UTC without a "Z", so add one
+const parseTs = (s) => new Date(String(s).replace(' ', 'T') + (/[zZ]|[+-]\d\d:?\d\d$/.test(s) ? '' : 'Z')).getTime();
+const dfmt = (ms) => {
+  const d = new Date(ms), p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+
+let dolls = [], lastSig = '', chart = null, updated = 'Loading…';
+const st = { sort: 'new', dir: -1, per: 12, page: 1, filter: 'all', host: '', q: '', sel: null };
+const hashMatch = location.hash.match(/^#doll-(\d+)$/);
+if (hashMatch) st.sel = Number(hashMatch[1]);
+
+function prep(d) {
+  const h = d.history.map((x) => ({ t: parseTs(x.t), p: x.price })).filter((x) => !isNaN(x.t)).sort((a, b) => a.t - b.t);
+  const cur = d.currentPrice ?? (h.length ? h[h.length - 1].p : null);
+  const first = h.length ? h[0].p : null;
+  let host = '';
+  try { host = new URL(d.url).host; } catch (e) {}
+  return { ...d, h, cur, host,
+    pct: first && cur != null ? ((cur - first) / first) * 100 : 0,
+    firstT: h.length ? h[0].t : 0, lastT: h.length ? h[h.length - 1].t : 0 };
+}
+
+function visible() {
+  let l = dolls.filter((d) => d.name.toLowerCase().includes(st.q));
+  if (st.host) l = l.filter((d) => d.host === st.host);
+  if (st.filter === 'down') l = l.filter((d) => d.pct <= -0.5);
+  if (st.filter === 'up') l = l.filter((d) => d.pct >= 0.5);
+  if (st.filter === 'same') l = l.filter((d) => Math.abs(d.pct) < 0.5);
+  const k = st.sort;
+  l.sort((a, b) => (k === 'name' ? a.name.localeCompare(b.name) : k === 'price' ? (a.cur ?? 0) - (b.cur ?? 0) : a.lastT - b.lastT) * st.dir);
+  return l;
+}
+
+// small step-line chart that stands in for the product photo
+function spark(cv, h) {
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth || 250, ht = cv.clientHeight || 140;
+  cv.width = w * dpr; cv.height = ht * dpr;
+  const c = cv.getContext('2d');
+  c.scale(dpr, dpr);
+  if (!h.length) return;
+  const pad = 16, t0 = h[0].t, t1 = Math.max(Date.now(), h[h.length - 1].t);
+  const ps = h.map((x) => x.p), lo = Math.min(...ps), hi = Math.max(...ps);
+  const X = (t) => pad + (t1 === t0 ? 0.5 : (t - t0) / (t1 - t0)) * (w - 2 * pad);
+  const Y = (p) => (hi === lo ? ht / 2 : ht - pad - ((p - lo) / (hi - lo)) * (ht - 2 * pad));
+  c.beginPath();
+  c.moveTo(X(h[0].t), Y(h[0].p));
+  for (let i = 1; i < h.length; i++) { c.lineTo(X(h[i].t), Y(h[i - 1].p)); c.lineTo(X(h[i].t), Y(h[i].p)); }
+  c.lineTo(X(t1), Y(h[h.length - 1].p));
+  c.strokeStyle = css('--accent'); c.lineWidth = 2; c.stroke();
+  h.forEach((x) => { c.beginPath(); c.arc(X(x.t), Y(x.p), 3.5, 0, 7); c.fillStyle = css('--wrap'); c.fill(); c.stroke(); });
+}
+
+function renderSide() {
+  const hosts = {};
+  dolls.forEach((d) => { hosts[d.host] = (hosts[d.host] || 0) + 1; });
+  const li = (on, act, v, text) => `<li class="${on ? 'on' : ''}"><a href="#" data-a="${act}" data-v="${esc(v)}">${text}</a></li>`;
+  const menu = [['down', '▼ Price drops'], ['up', '▲ Price increases'], ['same', 'Unchanged']];
+  $('side').innerHTML = `
+    <h3>Menu</h3>
+    <ul>${li(st.filter === 'all', 'home', '', 'HOME')}${menu.map(([v, t]) => li(st.filter === v, 'filter', v, t)).join('')}</ul>
+    <h3>Shops</h3>
+    <ul>${li(!st.host, 'host', '', `All (${dolls.length})`)}${Object.entries(hosts).map(([h, n]) => li(st.host === h, 'host', h, `${esc(h)} (${n})`)).join('')}</ul>
+    <h3>Tracking</h3>
+    <div class="cartbox">${dolls.length} dolls tracked<br>${esc(updated)}</div>`;
+}
+
+function renderList() {
+  const l = visible(), total = l.length, pages = Math.max(1, Math.ceil(total / st.per));
+  st.page = Math.min(st.page, pages);
+  const slice = l.slice((st.page - 1) * st.per, st.page * st.per);
+
+  const ev = [];
+  dolls.forEach((d) => {
+    for (let i = 1; i < d.h.length; i++) if (d.h[i].p !== d.h[i - 1].p) ev.push({ d, t: d.h[i].t, a: d.h[i - 1].p, b: d.h[i].p });
+  });
+  ev.sort((x, y) => y.t - x.t);
+  const notices = ev.slice(0, 5).map((e) =>
+    `<div>${dfmt(e.t)} &nbsp;<a href="#" data-a="open" data-v="${e.d.id}">${esc(e.d.name)}</a> &nbsp;${fmt(e.a)} → ${fmt(e.b)}</div>`
+  ).join('') || 'No price changes recorded yet.';
+
+  const sortLink = (k, t) => `<a href="#" data-a="sort" data-v="${k}" style="${st.sort === k ? 'font-weight:700' : ''}">${st.sort === k ? (st.dir > 0 ? '▲' : '▼') : ''}${t}</a>`;
+  const pg = `<div class="pg">
+    ${st.page > 1 ? `<a href="#" data-a="page" data-v="${st.page - 1}">&lt;&lt; Prev</a>` : ''}
+    ${Array.from({ length: pages }, (_, i) => i + 1).map((n) => (n === st.page ? `<b>${n}</b>` : `<a href="#" data-a="page" data-v="${n}">${n}</a>`)).join('')}
+    ${st.page < pages ? `<a href="#" data-a="page" data-v="${st.page + 1}">Next &gt;&gt;</a>` : ''}
+    <div class="cnt">(Total: ${total} dolls)</div></div>`;
+
+  const now = Date.now();
+  const tiles = slice.map((d) => {
+    const desc = d.h.length > 1 && Math.abs(d.pct) >= 0.5
+      ? `<span class="${d.pct < 0 ? 'down' : 'up'}">${d.pct < 0 ? '▼' : '▲'} ${Math.abs(d.pct).toFixed(1)}% since first seen</span>` : 'No price change yet';
+    return `<div class="tile" data-id="${d.id}">
+      <a class="tname" href="#" data-a="open" data-v="${d.id}">${esc(d.name)}</a>
+      <canvas class="spark" data-a="open" data-v="${d.id}"></canvas>
+      <div class="row">${now - d.firstT < 864e5 ? '<span class="new">NEW</span>' : ''}</div>
+      <div class="desc">${desc}</div>
+      <div class="tprice">${d.cur == null ? '—' : fmt(d.cur)}</div>
+      <div class="tstat">${Math.max(0, d.h.length - 1)} price change(s) · last ${d.lastT ? dfmt(d.lastT) : '—'}</div>
+    </div>`;
+  }).join('');
+
+  $('main').innerHTML = `
+    <div class="box"><h2>Latest price changes</h2><div class="in">${notices}</div></div>
+    <div class="plist"><h2>Tracked dolls</h2>
+      <div class="ctrl">
+        <span>Sort: ${sortLink('new', 'Newest')} ${sortLink('name', 'Name')} ${sortLink('price', 'Price')}</span>
+        <span>Per page: <select id="per">${[6, 12, 24].map((n) => `<option ${n === st.per ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
+      </div>
+      ${pg}
+      ${slice.length ? `<div class="grid">${tiles}</div>` : '<p class="empty">No dolls found. Register one with /register_doll.</p>'}
+      ${slice.length > 4 ? pg : ''}
+    </div>`;
+  document.querySelectorAll('canvas.spark').forEach((cv) => {
+    const d = dolls.find((x) => x.id === Number(cv.closest('.tile').dataset.id));
+    if (d) spark(cv, d.h);
+  });
+}
+
+function renderDetail(d) {
+  const ps = d.h.map((x) => x.p);
+  const badge = d.h.length > 1 && Math.abs(d.pct) >= 0.5
+    ? `<span class="${d.pct < 0 ? 'down' : 'up'}">${d.pct < 0 ? '▼' : '▲'} ${Math.abs(d.pct).toFixed(1)}% since first seen</span>` : '';
+  const rows = [...d.h].reverse().slice(0, 12).map((x) => `<tr><td>${dfmt(x.t)}</td><td style="text-align:right">${fmt(x.p)}</td></tr>`).join('');
+  $('main').innerHTML = `
+    <div class="crumb"><a href="#" data-a="back">HOME</a> &gt; ${esc(d.name)}</div>
+    <div class="plist"><h2>${esc(d.name)}</h2>
+      <div class="dbody">
+        <div class="chart-box"><canvas id="chart"></canvas></div>
+        <table class="spec">
+          <tr><th>Current price</th><td><span class="bigprice">${d.cur == null ? '—' : fmt(d.cur)}</span> &nbsp;${badge}</td></tr>
+          <tr><th>Lowest / Highest</th><td>${ps.length ? `${fmt(Math.min(...ps))} / ${fmt(Math.max(...ps))}` : '—'}</td></tr>
+          <tr><th>Price changes</th><td>${Math.max(0, ps.length - 1)}</td></tr>
+          <tr><th>Tracking since</th><td>${d.firstT ? dfmt(d.firstT) : '—'}</td></tr>
+          <tr><th>Listing</th><td><a href="${esc(safeUrl(d.url))}" target="_blank" rel="noopener">${esc(d.url)}</a></td></tr>
+        </table>
+        <h3 class="hh">Price history</h3>
+        <table class="spec hist"><tr><th>Date</th><th style="text-align:right">Price</th></tr>${rows}</table>
+      </div>
+    </div>
+    <p><a href="#" data-a="back">&lt;&lt; Back to list</a></p>`;
+  drawChart(d);
+}
+
+function drawChart(d) {
+  if (chart) { chart.destroy(); chart = null; }
+  if (typeof Chart === 'undefined') { $('chart').parentNode.textContent = 'Chart.js could not be loaded.'; return; }
+  const now = Date.now(), pts = [];
+  d.h.forEach((x, i) => {
+    if (i) pts.push({ x: x.t, y: d.h[i - 1].p });
+    pts.push({ x: x.t, y: x.p, real: true });
+  });
+  if (pts.length) pts.push({ x: now, y: pts[pts.length - 1].y });
+  const span = pts.length ? now - pts[0].x : 0;
+  const real = (c) => c.raw && c.raw.real;
+  const accent = css('--accent');
+  Chart.defaults.color = css('--sub');
+  Chart.defaults.borderColor = css('--spark-line');
+
+  chart = new Chart($('chart'), {
+    type: 'line',
+    data: { datasets: [{
+      data: pts, borderColor: accent, backgroundColor: css('--fill'), fill: true, borderWidth: 2, tension: 0,
+      pointBackgroundColor: css('--wrap'), pointBorderColor: accent, pointBorderWidth: 2,
+      pointRadius: (c) => (real(c) ? 5 : 0), pointHoverRadius: 7, pointHitRadius: (c) => (real(c) ? 12 : 0),
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'nearest', intersect: true },
+      scales: {
+        x: { type: 'linear', ticks: { maxTicksLimit: 7, maxRotation: 0, callback: (v) => {
+          const dt = new Date(v);
+          return span > 36 * 36e5 ? dt.toLocaleDateString([], { month: 'short', day: 'numeric' }) : dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } } },
+        y: { grace: '15%', ticks: { callback: (v) => fmt(v) } },
+      },
+      plugins: { legend: { display: false }, tooltip: { displayColors: false, backgroundColor: css('--tip-bg'),
+        callbacks: { title: (i) => new Date(i[0].parsed.x).toLocaleString(), label: (c) => fmt(c.parsed.y) } } },
+    },
+  });
+}
+
+function render() {
+  renderSide();
+  const d = dolls.find((x) => x.id === st.sel);
+  if (d) renderDetail(d);
+  else { if (chart) { chart.destroy(); chart = null; } renderList(); }
+}
+
+function nav(id) {
+  st.sel = id;
+  history.pushState(null, '', id == null ? location.pathname : '#doll-' + id);
+  render();
+  window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', () => {
+  const m = location.hash.match(/^#doll-(\d+)$/);
+  st.sel = m ? Number(m[1]) : null;
+  render();
+});
+
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-a]');
+  if (!el) return;
+  e.preventDefault();
+  const v = el.dataset.v;
+  switch (el.dataset.a) {
+    case 'home': st.filter = 'all'; st.host = ''; st.q = ''; $('q').value = ''; st.page = 1; nav(null); break;
+    case 'filter': st.filter = v; st.page = 1; nav(null); break;
+    case 'host': st.host = v; st.page = 1; nav(null); break;
+    case 'sort':
+      if (st.sort === v) st.dir *= -1; else { st.sort = v; st.dir = v === 'new' ? -1 : 1; }
+      st.page = 1; render(); break;
+    case 'page': st.page = Number(v); render(); window.scrollTo(0, 0); break;
+    case 'open': nav(Number(v)); break;
+    case 'back': nav(null); break;
+  }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'per') { st.per = Number(e.target.value); st.page = 1; render(); }
+});
+const search = () => { st.q = $('q').value.trim().toLowerCase(); st.page = 1; if (st.sel != null) nav(null); else render(); };
+$('q').addEventListener('input', search);
+$('go').addEventListener('click', search);
+$('reload').addEventListener('click', () => load(true));
+
+async function load(force) {
+  try {
+    const res = await fetch('/api/history', { cache: 'no-store' });
+    if (!res.ok) throw new Error('server returned ' + res.status);
+    const raw = await res.json();
+    updated = 'Updated ' + new Date().toLocaleTimeString();
+    const sig = JSON.stringify(raw);
+    if (force || sig !== lastSig) { lastSig = sig; dolls = raw.map(prep); render(); }   // only redraw when data changed
+    else renderSide();
+  } catch (err) {
+    updated = 'Could not load: ' + err.message;
+    renderSide();
+  }
+}
+
+const THEMES = ['shop', 'pink', 'dark'];
+function applyTheme(name) {
+  if (!THEMES.includes(name)) name = 'shop';
+  document.documentElement.dataset.theme = name;
+  document.querySelectorAll('#themes button').forEach((b) => b.classList.toggle('on', b.dataset.theme === name));
+  try { localStorage.setItem('theme', name); } catch (e) {}
+  if (dolls.length) render();   // redraw sparklines and chart in the new colors
+}
+$('themes').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (b) applyTheme(b.dataset.theme);
+});
+let savedTheme = 'shop';
+try { savedTheme = localStorage.getItem('theme') || 'shop'; } catch (e) {}
+applyTheme(savedTheme);
+
+load();
+setInterval(load, REFRESH_MS);
+</script>
+</body>
+</html>
