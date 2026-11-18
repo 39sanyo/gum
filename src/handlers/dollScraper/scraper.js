@@ -10,7 +10,10 @@ let browserPromise = null;
 
 function getBrowser() {
   if (!browserPromise) {
-    browserPromise = puppeteer.launch().then((browser) => {
+    browserPromise = puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', 'disable-dev-shm-usage'],
+    }).then((browser) => {
       browser.on('disconnected', () => { browserPromise = null; }); // relaunch if it dies
       return browser;
     });
