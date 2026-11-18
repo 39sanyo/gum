@@ -1,0 +1,16 @@
+[Unit]
+Description=Gum Discord Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Gum_bot
+ExecStart=/usr/bin/node src/index.js
+Restart=always
+RestartSec=5
+EnvironmentFile=/home/ubuntu/Gum_bot/.env
+
+[Install]
+WantedBy=multi-user.target

@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 npm-debug.log*
+data/bot.db
 
 # Environment variables
 .env
