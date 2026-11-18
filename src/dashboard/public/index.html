@@ -221,7 +221,7 @@ function renderList() {
       <div class="row">${now - d.firstT < 864e5 ? '<span class="new">NEW</span>' : ''}</div>
       <div class="desc">${desc}</div>
       <div class="tprice">${d.cur == null ? '—' : fmt(d.cur)}</div>
-      <div class="tstat">${Math.max(0, d.h.length - 1)} price change(s) · last ${d.lastT ? dfmt(d.lastT) : '—'}</div>
+      <div class="tstat">ID ${d.id} · ${Math.max(0, d.h.length - 1)} price change(s) · last ${d.lastT ? dfmt(d.lastT) : '—'}</div>
     </div>`;
   }).join('');
 
@@ -253,6 +253,7 @@ function renderDetail(d) {
       <div class="dbody">
         <div class="chart-box"><canvas id="chart"></canvas></div>
         <table class="spec">
+          <tr><th>Doll ID</th><td>${d.id}</td></tr>
           <tr><th>Current price</th><td><span class="bigprice">${d.cur == null ? '—' : fmt(d.cur)}</span> &nbsp;${badge}</td></tr>
           <tr><th>Lowest / Highest</th><td>${ps.length ? `${fmt(Math.min(...ps))} / ${fmt(Math.max(...ps))}` : '—'}</td></tr>
           <tr><th>Price changes</th><td>${Math.max(0, ps.length - 1)}</td></tr>

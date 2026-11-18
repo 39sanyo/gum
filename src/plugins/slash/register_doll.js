@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder, PermissionFlagsBits} = require('discord.js');
 const { simpleError } = require('../../handlers/simpleError.js');
 const { checkDoll } = require('../../handlers/checkDoll.js');
 
@@ -15,13 +15,21 @@ module.exports = {
     ),
 
   async execute(interaction) {
+
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+        return await interaction.reply({
+            //content: `${simpleError('adminErr')}`,
+            content:'[PERMISSION DENIED] You must be an administrator to run this command',
+            ephemeral: true,
+        })
+    }
+
     await interaction.deferReply();
     const role = process.env.ROLE_ID;
     const rawInput = interaction.options.getString('url');
 
     try {
       const { scrape: result, db } = await checkDoll(rawInput);
-      const dbStatus = db ? db.label : 'Price not found (not saved)';
 
       const ss = new AttachmentBuilder(result.screenshot, { name: 'screenshot.png' });
       const embed = new EmbedBuilder()

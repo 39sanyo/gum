@@ -23,6 +23,9 @@ const insertHistoryStmt = db.prepare(`
   VALUES (@doll_id, @price)
 `);
 
+const findDollByIdStmt = db.prepare('SELECT doll_id, name FROM doll_master WHERE doll_id = ?');
+const removeHistoryStmt = db.prepare('DELETE FROM price_history_master WHERE doll_id = ?');
+const removeDollStmt = db.prepare('DELETE FROM doll_master WHERE doll_id = ?');
 const getAllDollsStmt = db.prepare('SELECT doll_id, name, listing_url FROM doll_master');
 
 // 2. Transaction to handle new listings, price changes, and unchanged prices
@@ -66,6 +69,25 @@ const insertDollMaster = db.transaction((listing) => {
   };
 });
 
+const removeDoll = db.transaction((dollId) => {
+    const doll = findDollByIdStmt.get(dollId);
+
+    if (!doll) {
+        return{ status: 'NOT_FOUND', label: `No Doll found with ID ${dollId}`}
+    }
+
+    const historyInfo = removeHistoryStmt.run(dollId);
+    removeDollStmt.run(dollId);
+
+    console.log(`[REMOVED] "${doll.name}" (ID ${dollId}, and ${historyInfo.changes} price history rows)`);
+    return {
+        status: 'REMOVED',
+        label: `Removed "${doll.name}"`,
+        doll: { id: dollId, name:doll.name },
+    }
+})
+
+
 const getAllDolls = () => getAllDollsStmt.all();
 
-module.exports = { insertDollMaster, getAllDolls };
+module.exports = { insertDollMaster, getAllDolls, removeDoll };

@@ -79,6 +79,10 @@ const simpleError = (err) => {
   if (msg.startsWith('URL')) {
       return 'URL is not supported, please try another.';
   }
+// role errors //
+  if (msg.startsWith('adminErr')) {
+    return "[PERMISSION DENIED] You must be an Administrator to access this command."
+  }
 
   // --- Fallback ---
   return "Request failed. Try a different URL.";
