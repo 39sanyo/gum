@@ -3,5 +3,5 @@ apdb.world {
 }
 
 dev.apdb.world {
-    localhost:2000
+    reverse_proxy localhost:2000
 }
