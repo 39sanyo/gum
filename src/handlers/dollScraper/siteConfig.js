@@ -30,6 +30,11 @@ const siteConfigs = {
         elementSelector: '.doll-detail',
         priceElementSelector: '.doll-price',
     },
+
+    'fake.apdb.world': {
+        elementSelector: '.doll-detail',
+        priceElementSelector: '.doll-price',
+    },
 };
 
 module.exports = { siteConfigs };
