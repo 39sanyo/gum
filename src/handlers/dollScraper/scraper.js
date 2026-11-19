@@ -82,7 +82,7 @@ const scraper = async (url, elementSelector, priceElementSelector, { screenshot 
     }, elementSelector, priceElementSelector);
 
     const wantShot = typeof screenshot === 'function' ? await screenshot(result): null
-    const ssBuffer = wantShot ? await page.screenshot() : null;
+    const ssBuffer = wantShot ? Buffer.from(await page.screenshot()): null;
     return { ...result, screenshot: ssBuffer };
   } finally {
     await page.close(); // always closes the tab, even on errors
