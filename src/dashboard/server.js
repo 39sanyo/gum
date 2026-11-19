@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const Database = require('better-sqlite3');
 
-const PORT = process.env.DASHBOARD_PORT || 5050;
+const PORT = process.env.DASHBOARD_PORT || 2000;
 
 // Same file the bot uses (src/dashboard -> project root -> data/bot.db). Read-only so it can't change anything.
 const db = new Database(path.join(__dirname, '../../data/bot.db'), {
