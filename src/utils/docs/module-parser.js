@@ -85,7 +85,7 @@ class ModuleParser {
             'data/helpers.js': 'Database helper functions',
             'data/index.js': 'Database module exports',
             'security/permissions.js': 'Role-based permission validation',
-            'security/ratelimit.js': 'Rate limiting with database storage',
+            'security/rateLimit.js': 'Rate limiting with database storage',
             'handlers/message.js': 'Plugin-based message processing',
             'handlers/slash.js': 'Slash command handling with plugins',
             'handlers/interaction.js': 'Discord interaction processing',

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { checkRateLimit } = require('../security/ratelimit');
+const { checkRateLimit } = require('../security/rateLimit');
 const { checkCommandPermission } = require('../security/permissions');
 const { insertAuditLog } = require('../data');
 const { AUDIT_ACTIONS, EPHEMERAL } = require('../core/constants');
