@@ -31,7 +31,7 @@ module.exports = {
     try {
       const { scrape: result, db } = await checkDoll(rawInput);
 
-      const ss = new AttachmentBuilder(result.screenshot, { name: 'screenshot.png' });
+      const files = [];
       const embed = new EmbedBuilder()
         .setTitle(result.title ? `Doll Successfully Registered: ${result.title}` : 'Doll Price:')
         .setImage('attachment://screenshot.png')
@@ -45,7 +45,12 @@ module.exports = {
           }
         );
 
-      await interaction.editReply({ embeds: [embed], files: [ss] });
+        if (result.screenshot) {
+            files.push(new AttachmentBuilder(result.screenshot, { name: 'screenshot.png '}));
+            embed.setImage('attachment://screenshot.png');
+        }
+
+      await interaction.editReply({ embeds: [embed], files});
 
     } catch (err) {
       console.log(err);

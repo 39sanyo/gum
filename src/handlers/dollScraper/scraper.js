@@ -12,7 +12,7 @@ function getBrowser() {
   if (!browserPromise) {
     browserPromise = puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', 'disable-dev-shm-usage'],
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     }).then((browser) => {
       browser.on('disconnected', () => { browserPromise = null; }); // relaunch if it dies
       return browser;
@@ -81,11 +81,13 @@ const scraper = async (url, elementSelector, priceElementSelector, { screenshot 
       return { title, price, url, found: !!priceEl };
     }, elementSelector, priceElementSelector);
 
-    const ssBuffer = screenshot ? await page.screenshot() : null;
+    const wantShot = typeof screenshot === 'function' ? await screenshot(result): null
+    const ssBuffer = wantShot ? await page.screenshot() : null;
     return { ...result, screenshot: ssBuffer };
   } finally {
     await page.close(); // always closes the tab, even on errors
   }
 };
+
 
 module.exports = { scraper, closeBrowser };

@@ -14,4 +14,17 @@ const dollSearch = async (rawInput, options) => {
     return finder;
 }
 
-module.exports = { dollSearch };
+const dollSearchNoScreenShot = async (rawInput, options) => {
+    const matchedDomain = Object.keys(siteConfigs).find((domain) => rawInput.includes(domain));
+
+    if (!matchedDomain) {
+        throw new Error('URL Is not supported')
+    }
+
+    const { elementSelector, priceElementSelector } = siteConfigs[matchedDomain];
+    const finder = await scraperNoScreenShot(rawInput, elementSelector, priceElementSelector);
+    //console.log(finder);
+    return finder;
+}
+
+module.exports = { dollSearch, dollSearchNoScreenShot};

@@ -14,7 +14,7 @@ async function checkAllDolls(client) {
   try {
     for (const doll of getAllDolls()) {
       try {
-        const { scrape, db } = await checkDoll(doll.listing_url, doll.name, { screenshot: true });
+        const { scrape, db } = await checkDoll(doll.listing_url, doll.name);
         await notifyPriceChange(client, db, scrape.screenshot);
       } catch (err) {
         console.error(`[scheduler] Failed on ${doll.listing_url}:`, err.message);

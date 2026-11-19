@@ -23,6 +23,12 @@ const insertHistoryStmt = db.prepare(`
   VALUES (@doll_id, @price)
 `);
 
+const findDollFullByUrlStmt = db.prepare(`
+  SELECT doll_id, name, listing_url, current_price, last_updated
+  FROM doll_master WHERE listing_url = ?
+`);
+
+
 const findDollByIdStmt = db.prepare('SELECT doll_id, name FROM doll_master WHERE doll_id = ?');
 const removeHistoryStmt = db.prepare('DELETE FROM price_history_master WHERE doll_id = ?');
 const removeDollStmt = db.prepare('DELETE FROM doll_master WHERE doll_id = ?');
@@ -89,5 +95,6 @@ const removeDoll = db.transaction((dollId) => {
 
 
 const getAllDolls = () => getAllDollsStmt.all();
+const getDollByUrl = (url) => findDollFullByUrlStmt.get(url);
 
-module.exports = { insertDollMaster, getAllDolls, removeDoll };
+module.exports = { insertDollMaster, getAllDolls, getDollByUrl, removeDoll };

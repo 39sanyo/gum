@@ -9,7 +9,7 @@ async function notifyPriceChange(client, dbResult, screenshot) {
   const embed = new EmbedBuilder()
     .setTitle(`${dropped ? '📉 Price drop' : '📈 Price increase'}: ${name}`)
     .setURL(url)
-    .setDescription(` ID:~~$${oldPrice}~~ → **$${newPrice}**`)
+    .setDescription(`~~$${oldPrice}~~ → **$${newPrice}**`)
     .setColor(dropped ? 0x2ecc71 : 0xe74c3c)
     .setTimestamp();
 

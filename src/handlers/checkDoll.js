@@ -1,5 +1,5 @@
 const { dollSearch } = require('./dollScraper/dollSearch');
-const { insertDollMaster } = require('./dollMaster');
+const { insertDollMaster, getDollByUrl } = require('./dollMaster');
 
 function parsePrice(raw) {
   if (!raw) return null;
@@ -8,7 +8,14 @@ function parsePrice(raw) {
 }
 
 async function checkDoll(url, fallbackName, options) {
-  const scrape = await dollSearch(url, options);
+  const shouldScrenshot = (result) => {
+      const newPrice = parsePrice(result.price);
+      if (newPrice === null) return false;
+      const existing = getDollByUrl(url);
+      return !existing || existing.current_price !== newPrice;
+  };
+
+  const scrape = await dollSearch(url, {screenshot: shouldScrenshot, ...options});
   const price = parsePrice(scrape.price);
 
   let db = null;
