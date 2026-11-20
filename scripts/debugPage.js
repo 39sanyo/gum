@@ -12,6 +12,5 @@ puppeteer.use(require('puppeteer-extra-plugin-stealth')());
   const html = await page.content();
   console.log('html length:', html.length);
   console.log(html.slice(0, 600));
-  await page.screenshot({ path: 'debug.png' });
   await browser.close();
 })();
